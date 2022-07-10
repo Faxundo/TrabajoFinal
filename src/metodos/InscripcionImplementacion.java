@@ -3,8 +3,6 @@ package metodos;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
 
 import modelos.Alumno;
 import modelos.Carrera;
@@ -83,7 +81,7 @@ public class InscripcionImplementacion implements InscripcionInterfaz {
 	}
 	@Override
 	public boolean verificarInscripcion(int id,Inscripcion inscripcion) {
-		List<Inscripcion> lista = new ArrayList<Inscripcion>();
+		//Este método compara las fechas de dos inscripciones y devuelve un boolean que indica si las fechas son iguales o no.
 		int anio = inscripcion.getExamen().getAnio();
 		int mes = inscripcion.getExamen().getMes();
 		int dia = inscripcion.getExamen().getDia();
@@ -128,7 +126,6 @@ public class InscripcionImplementacion implements InscripcionInterfaz {
 				ex.setMes(rs.getInt("mes"));
 				ex.setDia(rs.getInt("dia"));
 				i.setExamen(ex);
-				lista.add(i);
 				anioC=i.getExamen().getAnio();
 				mesC=i.getExamen().getMes();
 				diaC=i.getExamen().getDia();

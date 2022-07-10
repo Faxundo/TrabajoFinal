@@ -98,7 +98,7 @@ public class Controlador {
 						if (A33 == true) {
 								inscripciones.inscripcionExamen(i);
 						} else {
-							System.err.println("\n[ Ya tienes un exámen que se realiza ese día ]");
+							System.err.println("[ Ya tienes un exámen que se realiza ese día ]");
 						}
 					} else {
 						System.err.println("\n[ No se encontró el exámen buscado ]");
@@ -183,6 +183,7 @@ public class Controlador {
 				System.out.println("[ Creando Carrera ]");
 				System.out.print("- Ingrese el nombre de la carrera que desea añadir: ");
 				String respuestaB11 = sc.nextLine();
+				System.out.println("");
 				carreras.crearCarrera(respuestaB11);
 				respuestaSiNo();
 				break;
@@ -242,7 +243,6 @@ public class Controlador {
 				respuestaSiNo();
 				break;
 			case "4":
-				//Para registrar una nota, se necesita que el alumno esté inscripto en una mesa de exámenes.
 				System.out.println("———————————");
 				System.out.println("[ Registrando Nota de Alumno ]");
 				System.out.println("- ¿A que alumno pertenece la nota? \n");
@@ -264,6 +264,7 @@ public class Controlador {
 						//Comprueba que la nota ingresada sea igual o menor a 10.
 						if (respuestaB43 <= 10) {
 							resultados.registrarResultado(examenes.buscarExamenPorId(respuestaB42), alumnos.buscarAlumno(respuestaB41), respuestaB43);
+							//Al ingresar la nota se borra la inscripciones de examenes a esa materia
 							inscripciones.eliminarInscripcion(respuestaB41, respuestaB42);
 						} else {
 							System.err.println("\n[ La nota ingresada no es válida ]");
@@ -304,15 +305,19 @@ public class Controlador {
 				Alumno B62 = alumnos.buscarAlumno(respuestaB61);
 				if (B62 != null) {
 					System.out.println("\n- ¿De que exámen desea borrar la nota?\n");
-					System.out.println(resultados.buscarResultadoPorId(respuestaB61));
-					System.out.print("\n- Ingrese el ID de la mesa de exámenes: ");
-					int respuestaB63 = sc.nextInt();
-					resultados.borrarResultado(respuestaB61, respuestaB63);
-					sc.nextLine();
-					respuestaSiNo();
+					if (resultados.buscarResultadoPorId(respuestaB61).getNumero_mesa() != null) {
+						System.out.print("\n- Ingrese el ID de la mesa de exámenes: ");
+						int respuestaB63 = sc.nextInt();
+						resultados.borrarResultado(respuestaB61, respuestaB63);
+						System.out.println("\n[ La nota se ha borrado correctamente ]");
+					} else {
+						System.out.println("[ No hay resultados para mostrar ]");
+					}
 				} else {
 					System.err.println("\n[ No se encontró el alumno buscado ]");
 				}
+				sc.nextLine();
+				respuestaSiNo();
 				break;
 			case "7":
 				System.out.println("———————————");
@@ -329,10 +334,12 @@ public class Controlador {
 					System.out.print("\n- Ingrese un nuevo DNI para el alumno: ");
 					String respuestaA74 = sc.nextLine();
 					alumnos.actualizarAlumno(respuestaA73, respuestaA74, A72.getId());
-					respuestaSiNo();
 				} else {
 					System.err.println("\n[ No se encontró el alumno buscado ]");
+					sc.nextLine();
 				}
+				respuestaSiNo();
+				break;
 			case "8":
 				System.out.println("———————————");
 				System.out.println("[ Actualizar Nombre de Carerra ]");
@@ -346,7 +353,7 @@ public class Controlador {
 					String respuestaB82 = sc.nextLine();
 					carreras.actualizarCarrera(respuestaB82, respuestaB81);
 				} else {
-					System.err.println("[ No se ha encontrado la carrera seleccionada ]");
+					System.err.println("\n[ No se ha encontrado la carrera seleccionada ]");
 					sc.nextLine();
 				}
 				respuestaSiNo();
@@ -508,6 +515,7 @@ public class Controlador {
 	public static void respuestaSiNo() {
 		System.out.println("\n- ¿Desea continuar? \n[ SI ] o [ NO ]");
 		respuesta = sc.nextLine();
+		//Si la respuesta no es un "SI" o un "NO", se arma un bucle hasta que se ingrese una respuesta correcta
 		if (respuesta.toUpperCase().equals("SI") || respuesta.toUpperCase().equals("NO")) {
 		} else {
 			System.err.println("\n[ Respuesta no válida, intente de nuevo ]");

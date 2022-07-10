@@ -125,10 +125,6 @@ public class ResultadoImplementacion implements ResultadoInterfaz{
 				r.setNota(rs.getInt("Nota"));
 				System.out.println(r.toString());
 			}
-			if (r.getNumero_mesa()!=null) {
-			} else {
-				System.out.println("[ No hay resultados para mostrar ]");
-			}
 			rs.close();
 		} catch (SQLException e) {
 			System.err.println("[ Hubo un error al realizar la consulta ]");
