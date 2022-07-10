@@ -3,6 +3,8 @@ package metodos;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import modelos.Carrera;
 import modelos.Examen;
@@ -104,7 +106,7 @@ public class ExamenImplementacion implements ExamenInterfaz{
 	}
 
 	@Override
-	public Examen buscarPorId(int id) {
+	public Examen buscarExamenPorId(int id) {
 		Examen ex = null;
 		try {
 			sql = "SELECT examen.*, materia.id as idmateria, materia.Carrera_FK as Carrera, materia.Nombre as NombreMateria, carrera.id idcarrera, carrera.Carrera as NombreCarrera\r\n"
@@ -138,15 +140,16 @@ public class ExamenImplementacion implements ExamenInterfaz{
 	}
 
 	@Override
-	public void mostrarPorCarrera(int id) {
+	public List<Examen> mostrarExamenesPorCarrera(int id) {
+		List<Examen> lista = new ArrayList<Examen>();
 		try {
-			sql = "SELECT examen.*, materia.id as idmateria, materia.Carrera_FK as Carrera, materia.Nombre as NombreMateria, carrera.id idcarrera, carrera.Carrera as NombreCarrera\r\n"
-					+ "FROM examen\r\n"
-					+ "INNER JOIN materia ON\r\n"
-					+ "examen.Materia=materia.id\r\n"
-					+ "INNER JOIN carrera ON\r\n"
-					+ "materia.Carrera_FK=carrera.id\r\n"
-					+ "WHERE materia.Carrera_FK=" + id;
+				sql = "SELECT examen.*, materia.id as idmateria, materia.Carrera_FK as Carrera, materia.Nombre as NombreMateria, carrera.id idcarrera, carrera.Carrera as NombreCarrera\r\n"
+						+ "FROM examen\r\n"
+						+ "INNER JOIN materia ON\r\n"
+						+ "examen.Materia=materia.id\r\n"
+						+ "INNER JOIN carrera ON\r\n"
+						+ "materia.Carrera_FK=carrera.id\r\n"
+						+ "WHERE materia.Carrera_FK=" + id;
 			ResultSet rs = stmt.executeQuery(sql);
 			while (rs.next()) {
 				Examen ex = new Examen();
@@ -162,9 +165,34 @@ public class ExamenImplementacion implements ExamenInterfaz{
 				ex.setAnio(rs.getInt("anio"));
 				ex.setMes(rs.getInt("mes"));
 				ex.setDia(rs.getInt("dia"));
+				lista.add(ex);
 				System.out.println(ex.toString());
 			}
 			rs.close();
+		} catch (SQLException e) {
+			System.err.println("[ Hubo un error al realizar la consulta ]");
+		}
+		return lista;
+	}
+
+	@Override
+	public void darBajaExamen(int id1, int id2) {
+		try {
+			sql = "DELETE FROM inscripcion WHERE inscripcion.Alumno_FK=" + id1 + " AND inscripcion.Examen_FK=" + id2;
+			stmt.executeUpdate(sql);
+			System.out.println("[ Has sido dado de baja exitósamente ]");
+		}catch (SQLException e) {
+			System.err.println("[ Hubo un error al realizar la consulta ]");
+		}
+		
+	}
+
+	@Override
+	public void actualizarExamen(int mes, int dia, int id) {
+		try {
+			sql = "UPDATE examen SET mes='" + mes + "', dia='" + dia + "' WHERE examen.id=" + id;
+			stmt.executeUpdate(sql);
+			System.out.println("\n[ Los datos del exámen han sido actualizados ]");
 		} catch (SQLException e) {
 			System.err.println("[ Hubo un error al realizar la consulta ]");
 		}

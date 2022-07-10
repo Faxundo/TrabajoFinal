@@ -62,7 +62,7 @@ public class MateriaImplementacion implements MateriaInterfaz {
 
 
 	@Override
-	public Materia buscarPorId(int id) {
+	public Materia buscarMateriaPorId(int id) {
 		Materia m = null;
 		sql = "SELECT materia.*, carrera.id as idcarrera, carrera.Carrera as Carrera\r\n"
 				+ "FROM materia\r\n"

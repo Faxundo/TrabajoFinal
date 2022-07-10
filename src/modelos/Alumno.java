@@ -31,6 +31,12 @@ public class Alumno {
 		this.dni = dni;
 		this.lu = lu;
 	}
+	
+
+	public Alumno(String nombre_completo, String dni) {
+		this.nombre_completo = nombre_completo;
+		this.dni = dni;
+	}
 
 	public int getId() {
 		return id;

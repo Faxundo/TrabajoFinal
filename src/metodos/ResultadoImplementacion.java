@@ -84,7 +84,7 @@ public class ResultadoImplementacion implements ResultadoInterfaz{
 
 
 	@Override
-	public Resultado buscarPorId(int id) {
+	public Resultado buscarResultadoPorId(int id) {
 		Resultado r = null;
 		try {
 			sql = "SELECT resultado.*, alumno.id as alumnoId, alumno.Nombre_Completo, alumno.DNI, alumno.LU, alumno.Carrera_FK as alumnoCarrera, examen.id as examenId, examen.Materia examenMateria, examen.anio, examen.mes, examen.dia, materia.id as materiaId, materia.Carrera_FK as materiaCarrera, materia.Nombre materiaNombre, carrera.id as carreraId, carrera.Carrera nombreCarrera\r\n"
@@ -99,8 +99,8 @@ public class ResultadoImplementacion implements ResultadoInterfaz{
 					+ "materia.Carrera_FK=carrera.id\r\n"
 					+ "WHERE alumno.id=" + id;
 			ResultSet rs = stmt.executeQuery(sql);
+			r = new Resultado();
 			while (rs.next()) {
-				r = new Resultado();
 				Alumno a = new Alumno();
 				a.setId(rs.getInt("alumnoId"));
 				a.setNombre_completo(rs.getString("Nombre_Completo"));
@@ -125,6 +125,10 @@ public class ResultadoImplementacion implements ResultadoInterfaz{
 				r.setNota(rs.getInt("Nota"));
 				System.out.println(r.toString());
 			}
+			if (r.getNumero_mesa()!=null) {
+			} else {
+				System.out.println("[ No hay resultados para mostrar ]");
+			}
 			rs.close();
 		} catch (SQLException e) {
 			System.err.println("[ Hubo un error al realizar la consulta ]");
@@ -134,7 +138,7 @@ public class ResultadoImplementacion implements ResultadoInterfaz{
 
 
 	@Override
-	public Resultado buscarPorMateria(int id) {
+	public Resultado buscarResultadoPorMateria(int id) {
 		Resultado r = null;
 		try {
 			sql = "SELECT resultado.*, alumno.id as alumnoId, alumno.Nombre_Completo, alumno.DNI, alumno.LU, alumno.Carrera_FK as alumnoCarrera, examen.id as examenId, examen.Materia examenMateria, examen.anio, examen.mes, examen.dia, materia.id as materiaId, materia.Carrera_FK as materiaCarrera, materia.Nombre materiaNombre, carrera.id as carreraId, carrera.Carrera nombreCarrera\r\n"
@@ -158,7 +162,7 @@ public class ResultadoImplementacion implements ResultadoInterfaz{
 				a.setLu(rs.getString("LU"));
 				Carrera c = new Carrera();
 				c.setId(rs.getInt("carreraId"));
-				c.setNombre("nombreCarrera");
+				c.setNombre(rs.getString("nombreCarrera"));
 				a.setCarrera(c);
 				r.setAlumno(a);
 				Examen ex = new Examen();
@@ -173,7 +177,6 @@ public class ResultadoImplementacion implements ResultadoInterfaz{
 				ex.setDia(rs.getInt("dia"));
 				r.setNumero_mesa(ex);
 				r.setNota(rs.getInt("Nota"));
-				//Si está vacío da null
 				System.out.println(r.toString());
 			}
 			rs.close();
@@ -238,6 +241,80 @@ public class ResultadoImplementacion implements ResultadoInterfaz{
 		} catch (SQLException e) {
 			System.err.println("[ Hubo un error al realizar la consulta ]");
 		}
+	}
+
+
+	@Override
+	public void borrarResultado(int alumno, int examen) {
+		try {
+			sql="DELETE FROM resultado\r\n"
+					+ "WHERE resultado.Alumno_FK=" + alumno + " AND resultado.Numero_Mesa=" + examen;
+			stmt.executeUpdate(sql);
+		} catch (SQLException e) {	
+			System.err.println("[ Hubo un error al realizar la consulta ]");
+		}
+		
+	}
+
+
+	@Override
+	public void actualizarResultado(int nota, int alumno, int materia) {
+		try {
+			sql = "UPDATE resultado SET Nota=" + nota + " WHERE resultado.Alumno_FK=" + alumno + " AND resultado.Numero_Mesa=" + materia;
+			stmt.executeUpdate(sql);
+			System.out.println("\n[ La nota ha sido actualizada ]");
+		} catch (SQLException e) {
+			System.err.println("[ Hubo un error al realizar la consulta ]");
+		}
+	}
+
+
+	@Override
+	public Resultado buscarResultadoEspecifico(int alumno, int examen) {
+		Resultado r = null;
+		try {
+			sql = "SELECT resultado.*, alumno.id as alumnoId, alumno.Nombre_Completo, alumno.DNI, alumno.LU, alumno.Carrera_FK as alumnoCarrera, examen.id as examenId, examen.Materia examenMateria, examen.anio, examen.mes, examen.dia, materia.id as materiaId, materia.Carrera_FK as materiaCarrera, materia.Nombre materiaNombre, carrera.id as carreraId, carrera.Carrera nombreCarrera\r\n"
+					+ "FROM resultado\r\n"
+					+ "INNER JOIN alumno ON\r\n"
+					+ "resultado.Alumno_FK=alumno.id\r\n"
+					+ "INNER JOIN examen ON\r\n"
+					+ "resultado.Numero_Mesa=examen.id\r\n"
+					+ "INNER JOIN materia ON\r\n"
+					+ "examen.Materia=materia.id\r\n"
+					+ "INNER JOIN carrera ON\r\n"
+					+ "materia.Carrera_FK=carrera.id\r\n"
+					+ "WHERE alumno.id=" + alumno + " AND examen.id=" + examen;
+			ResultSet rs = stmt.executeQuery(sql);
+			r = new Resultado();
+			while (rs.next()) {
+				Alumno a = new Alumno();
+				a.setId(rs.getInt("alumnoId"));
+				a.setNombre_completo(rs.getString("Nombre_Completo"));
+				a.setDni(rs.getString("DNI"));
+				a.setLu(rs.getString("LU"));
+				Carrera c = new Carrera();
+				c.setId(rs.getInt("carreraId"));
+				c.setNombre("nombreCarrera");
+				a.setCarrera(c);
+				r.setAlumno(a);
+				Examen ex = new Examen();
+				ex.setId(rs.getInt("examenId"));
+				Materia m = new Materia();
+				m.setId(rs.getInt("materiaId"));
+				m.setNombre(rs.getString("materiaNombre"));
+				m.setCarrera(c);
+				ex.setMateria(m);
+				ex.setAnio(rs.getInt("anio"));
+				ex.setMes(rs.getInt("mes"));
+				ex.setDia(rs.getInt("dia"));
+				r.setNumero_mesa(ex);
+				r.setNota(rs.getInt("Nota"));
+			}
+			rs.close();
+		} catch (SQLException e) {
+			System.err.println("[ Hubo un error al realizar la consulta ]");
+		}
+		return r;
 	}
 
 
